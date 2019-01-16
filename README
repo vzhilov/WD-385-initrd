@@ -20,6 +20,13 @@ dd if=/dev/zero of=/dev/mtdblock2
 dd if=uInitrd-wd385 of=/dev/mtdblock2
 
 #If you don't have access to shell use USB UART connector (press "1" to stop autoboot):
+#Connect FT232RL USB UART Converter
+#   NAS         UART
+#   o - Tx      Rx
+#   o - GND     GND
+#   o - 3.3v    -
+#   - -         -
+#   o - Rx      Tx
 usb start
 fatload usb 0:1 0xa00000 /uimage
 fatload usb 0:1 0xf00000 /uramdisk (uInitrd-wd385)
