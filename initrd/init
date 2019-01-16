@@ -16,12 +16,12 @@ decrypt_shell() {
   if [  -e /mnt/key/key.luks  ]; then
     cryptsetup luksOpen $cryptdev cryptroot --key-file /mnt/key/key.luks
     check_unlock
-    # Look for key on nand
   else
-    rescue_shell
-#test  
+    startnetwork
+    dropbear -B -p 2222 -b /etc/dropbear/banner.crypto -P /run/dropbear.pid 2>&1 >/dev/null
   fi
 }
+
 # Check if key-decrypt was sucessfull
 check_unlock(){
 wait    
@@ -72,7 +72,7 @@ boot() {
   umount /proc 2> /dev/null
   umount /dev/pts 2> /dev/null
   umount /dev 2> /dev/null
-  exec switch_root -c /dev/console /mnt/root /sbin/init || run_shell
+  exec switch_root -c /dev/console /mnt/root /sbin/init
 }
 
 #-----------init script--------------
@@ -104,16 +104,12 @@ wait
 mount -t ubifs ubi0:config /mnt/config
 
 #check for LUKS-devices
-if
-  blkid | grep -q crypto
-then
-  decrypt_shell
-  echo -e "\n Waiting for device decryption"
-  # wait until the device exists and is decrypted
-  while ! [ -e /dev/mapper/cryptroot ]; do
-    sleep 2
-  done
-fi
+decrypt_shell
+echo -e "\n Waiting for device decryption"
+# wait until the device exists and is decrypted
+while ! [ -e /dev/mapper/cryptroot ]; do
+  sleep 2
+done
 
 initlvm
 mount -o rw /dev/MyVolGroup/root /mnt/root 2>&1 >/dev/null
