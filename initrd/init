@@ -18,7 +18,7 @@ decrypt_shell() {
     check_unlock
     # Look for key on nand
   else
-    rescue_shell()  
+    rescue_shell  
   fi
 }
 # Check if key-decrypt was sucessfull
